@@ -9249,7 +9249,7 @@ impl Editor {
             let selection_is_empty = selection.is_empty();
 
             let (start, end) = if selection_is_empty {
-                let (word_range, _) = buffer.surrounding_word(selection.start, None);
+                let (word_range, _) = buffer.surrounding_word(selection.start, None, None);
                 (word_range.start, word_range.end)
             } else {
                 (
@@ -11925,8 +11925,8 @@ impl Editor {
                         start_offset + query_match.start()..start_offset + query_match.end();
 
                     if !select_next_state.wordwise
-                        || (!buffer.is_inside_word(offset_range.start, None)
-                            && !buffer.is_inside_word(offset_range.end, None))
+                        || (!buffer.is_inside_word(offset_range.start, None, None)
+                            && !buffer.is_inside_word(offset_range.end, None, None))
                     {
                         let idx = selections
                             .partition_point(|selection| selection.end <= offset_range.start);
@@ -11992,7 +11992,7 @@ impl Editor {
 
             if only_carets {
                 for selection in &mut selections {
-                    let (word_range, _) = buffer.surrounding_word(selection.start, None);
+                    let (word_range, _) = buffer.surrounding_word(selection.start, None, None);
                     selection.start = word_range.start;
                     selection.end = word_range.end;
                     selection.goal = SelectionGoal::None;
@@ -12073,8 +12073,8 @@ impl Editor {
             };
 
             let is_partial_word_match = select_next_state.wordwise
-                && (buffer.is_inside_word(offset_range.start, None)
-                    || buffer.is_inside_word(offset_range.end, None));
+                && (buffer.is_inside_word(offset_range.start, None, None)
+                    || buffer.is_inside_word(offset_range.end, None, None));
 
             let is_initial_selection = MultiBufferOffset(query_match.start())
                 == initial_selection.start
@@ -12157,8 +12157,8 @@ impl Editor {
                         end_offset - query_match.end()..end_offset - query_match.start();
 
                     if !select_prev_state.wordwise
-                        || (!buffer.is_inside_word(offset_range.start, None)
-                            && !buffer.is_inside_word(offset_range.end, None))
+                        || (!buffer.is_inside_word(offset_range.start, None, None)
+                            && !buffer.is_inside_word(offset_range.end, None, None))
                     {
                         next_selected_range = Some(offset_range);
                         break;
@@ -12216,7 +12216,7 @@ impl Editor {
 
             if only_carets {
                 for selection in &mut selections {
-                    let (word_range, _) = buffer.surrounding_word(selection.start, None);
+                    let (word_range, _) = buffer.surrounding_word(selection.start, None, None);
                     selection.start = word_range.start;
                     selection.end = word_range.end;
                     selection.goal = SelectionGoal::None;
@@ -12906,10 +12906,11 @@ impl Editor {
                 if let Some((node, _)) = buffer.syntax_ancestor(old_range.clone()) {
                     // manually select word at selection
                     if ["string_content", "inline"].contains(&node.kind()) {
-                        let (word_range, _) = buffer.surrounding_word(old_range.start, None);
+                        let (word_range, _) = buffer.surrounding_word(old_range.start, None, None);
                         // ignore if word is already selected
                         if !word_range.is_empty() && old_range != word_range {
-                            let (last_word_range, _) = buffer.surrounding_word(old_range.end, None);
+                            let (last_word_range, _) =
+                                buffer.surrounding_word(old_range.end, None, None);
                             // only select word if start and end point belongs to same word
                             if word_range == last_word_range {
                                 selected_larger_node = true;

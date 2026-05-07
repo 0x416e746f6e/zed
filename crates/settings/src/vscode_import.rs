@@ -626,6 +626,7 @@ impl VsCodeSettings {
                         .flat_map(|n| n.as_u64().map(|n| n as usize))
                         .collect()
                 }),
+            word_separators: self.read_string("editor.wordSeparators"),
             word_diff_enabled: None,
         }
     }

@@ -1460,6 +1460,9 @@
   "modeline_lines": 5,
   // What debuggers are preferred by default for all languages.
   "debuggers": [],
+  // Characters that separate words.
+  // When set to null, built-in word classification is used.
+  "word_separators": null,
   // Whether to enable word diff highlighting in the editor.
   //
   // When enabled, changed words within modified lines are highlighted

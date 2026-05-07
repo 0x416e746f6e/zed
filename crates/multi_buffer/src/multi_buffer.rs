@@ -4029,11 +4029,21 @@ impl MultiBufferSnapshot {
         &self,
         position: T,
         scope_context: Option<CharScopeContext>,
+        word_separators: Option<Arc<str>>,
     ) -> bool {
         let position = position.to_offset(self);
         let classifier = self
             .char_classifier_at(position)
-            .scope_context(scope_context);
+            .scope_context(scope_context)
+            .word_separators(word_separators);
+        self.is_inside_word_with_classifier(position, classifier)
+    }
+
+    fn is_inside_word_with_classifier(
+        &self,
+        position: MultiBufferOffset,
+        classifier: CharClassifier,
+    ) -> bool {
         let next_char_kind = self.chars_at(position).next().map(|c| classifier.kind(c));
         let prev_char_kind = self
             .reversed_chars_at(position)
@@ -4046,13 +4056,16 @@ impl MultiBufferSnapshot {
         &self,
         start: T,
         scope_context: Option<CharScopeContext>,
+        word_separators: Option<Arc<str>>,
     ) -> (Range<MultiBufferOffset>, Option<CharKind>) {
         let mut start = start.to_offset(self);
         let mut end = start;
         let mut next_chars = self.chars_at(start).peekable();
         let mut prev_chars = self.reversed_chars_at(start).peekable();
-
-        let classifier = self.char_classifier_at(start).scope_context(scope_context);
+        let classifier = self
+            .char_classifier_at(start)
+            .scope_context(scope_context)
+            .word_separators(word_separators);
 
         let word_kind = cmp::max(
             prev_chars.peek().copied().map(|c| classifier.kind(c)),

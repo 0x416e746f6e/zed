@@ -747,7 +747,7 @@ impl Editor {
     fn completion_query(buffer: &MultiBufferSnapshot, position: impl ToOffset) -> Option<String> {
         let offset = position.to_offset(buffer);
         let (word_range, kind) =
-            buffer.surrounding_word(offset, Some(CharScopeContext::Completion));
+            buffer.surrounding_word(offset, Some(CharScopeContext::Completion), None);
         if offset > word_range.start && kind == Some(CharKind::Word) {
             Some(
                 buffer

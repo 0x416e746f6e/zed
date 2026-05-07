@@ -614,6 +614,12 @@ pub struct LanguageSettingsContent {
     ///
     /// Default: []
     pub debuggers: Option<Vec<String>>,
+    /// Characters that separate words.
+    ///
+    /// When unset, built-in word classification is used.
+    ///
+    /// Default: null
+    pub word_separators: Option<String>,
     /// Whether to enable word diff highlighting in the editor.
     ///
     /// When enabled, changed words within modified lines are highlighted

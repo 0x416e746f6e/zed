@@ -341,7 +341,11 @@ impl Editor {
                 let position = display_map
                     .clip_point(position, Bias::Left)
                     .to_offset(&display_map, Bias::Left);
-                let (range, _) = buffer.surrounding_word(position, None);
+                let separators = buffer
+                    .language_settings_at(position, cx)
+                    .word_separators
+                    .clone();
+                let (range, _) = buffer.surrounding_word(position, None, separators);
                 start = buffer.anchor_before(range.start);
                 end = buffer.anchor_before(range.end);
                 mode = SelectMode::Word(start..end);
@@ -499,11 +503,15 @@ impl Editor {
                         .clip_point(position, Bias::Left)
                         .to_offset(&display_map, Bias::Left);
                     let original_range = original_range.to_offset(buffer);
+                    let separators = buffer
+                        .language_settings_at(offset, cx)
+                        .word_separators
+                        .clone();
 
-                    let head_offset = if buffer.is_inside_word(offset, None)
+                    let head_offset = if buffer.is_inside_word(offset, None, separators.clone())
                         || original_range.contains(&offset)
                     {
-                        let (word_range, _) = buffer.surrounding_word(offset, None);
+                        let (word_range, _) = buffer.surrounding_word(offset, None, separators);
                         if word_range.start < original_range.start {
                             word_range.start
                         } else {

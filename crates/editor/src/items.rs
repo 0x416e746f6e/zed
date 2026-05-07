@@ -1721,8 +1721,11 @@ impl SearchableItem for Editor {
             }
             SeedQuerySetting::Selection => String::new(),
             SeedQuerySetting::Always => {
-                let (range, kind) = buffer_snapshot
-                    .surrounding_word(selection.start, Some(CharScopeContext::Completion));
+                let (range, kind) = buffer_snapshot.surrounding_word(
+                    selection.start,
+                    Some(CharScopeContext::Completion),
+                    None,
+                );
                 if kind == Some(CharKind::Word) {
                     let text: String = buffer_snapshot.text_for_range(range).collect();
                     if !text.trim().is_empty() {

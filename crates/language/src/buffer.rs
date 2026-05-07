@@ -5996,6 +5996,7 @@ pub struct CharClassifier {
     scope: Option<LanguageScope>,
     scope_context: Option<CharScopeContext>,
     ignore_punctuation: bool,
+    word_separators: Option<Arc<str>>,
 }
 
 impl CharClassifier {
@@ -6004,6 +6005,7 @@ impl CharClassifier {
             scope,
             scope_context: None,
             ignore_punctuation: false,
+            word_separators: None,
         }
     }
 
@@ -6021,6 +6023,13 @@ impl CharClassifier {
         }
     }
 
+    pub fn word_separators(self, word_separators: Option<Arc<str>>) -> Self {
+        Self {
+            word_separators,
+            ..self
+        }
+    }
+
     pub fn is_whitespace(&self, c: char) -> bool {
         self.kind(c) == CharKind::Whitespace
     }
@@ -6034,6 +6043,18 @@ impl CharClassifier {
     }
 
     pub fn kind_with(&self, c: char, ignore_punctuation: bool) -> CharKind {
+        if let Some(word_separators) = &self.word_separators {
+            if c.is_whitespace() {
+                return CharKind::Whitespace;
+            }
+
+            if word_separators.contains(c) {
+                return CharKind::Punctuation;
+            }
+
+            return CharKind::Word;
+        }
+
         if c.is_alphanumeric() || c == '_' {
             return CharKind::Word;
         }
